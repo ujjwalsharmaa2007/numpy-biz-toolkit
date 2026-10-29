@@ -519,18 +519,31 @@ select { font:inherit; padding:12px; border:1px solid #ccc3b5;
 <section id="report" class="card table-card" hidden>
   <h2>Your inventory outlook</h2>
   <p id="report-summary" class="subtitle"></p>
-  <div class="overflow">
+  <p class="notice" id="inventory-guide">
+      <strong>How to read this:</strong>
+      Days of stock left estimates how long your current stock will last.
+      Delivery lead time is how many days your supplier takes to deliver
+      after you order. If stock runs out before delivery, you may lose sales.
+      Suggested order is the number of units recommended for purchase now.
+    </p>
+    <div class="overflow">
     <table>
       <thead><tr>
         <th>PRODUCT</th><th>METHOD</th><th>7-DAY SALES</th>
-        <th>STOCK LEFT</th><th>LEAD TIME</th><th>ORDER</th>
+        <th>DAYS OF STOCK LEFT</th><th>DELIVERY LEAD TIME</th><th>SUGGESTED ORDER</th>
       </tr></thead>
       <tbody id="inventory-rows"></tbody>
     </table>
   </div>
 
   <div id="details">
-    <h2>A closer look</h2>
+    <h2>Daily sales forecast</h2>
+    <p class="notice">
+      Select a product to see its predicted sales for each of the next
+      seven days. These are estimates, not recorded sales.
+      The seven values add up to its 7-day sales total above.
+      Decimal values represent expected averages.
+    </p>
     <label for="product">Choose a product</label>
     <select id="product"></select>
     <div class="overflow">
