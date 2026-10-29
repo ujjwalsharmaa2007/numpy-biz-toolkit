@@ -52,3 +52,45 @@ def exponential_smoothing_forecast(sales, alpha=0.3, horizon=7):
         level = alpha * sales[:, day] + (1 - alpha) * level
 
     return np.repeat(level[:, np.newaxis], horizon, axis=1)
+
+
+def weekday_forecast(sales, dates, weeks=8, horizon=7):
+    """Forecast using each weekday's average over recent complete weeks."""
+    sales = np.asarray(sales, dtype=float)
+    dates = np.asarray(dates, dtype="datetime64[D]")
+
+    if sales.ndim != 2 or 0 in sales.shape:
+        raise ValueError("Sales must be a non-empty 2D array.")
+
+    if not np.all(np.isfinite(sales)) or np.any(sales < 0):
+        raise ValueError("Sales must be finite and non-negative.")
+
+    if dates.ndim != 1 or len(dates) != sales.shape[1]:
+        raise ValueError("Provide one date for every sales column.")
+
+    if np.isnat(dates).any():
+        raise ValueError("Dates cannot contain missing values.")
+
+    if np.any(np.diff(dates) != np.timedelta64(1, "D")):
+        raise ValueError("Dates must be consecutive and increasing.")
+
+    if not isinstance(weeks, int) or weeks < 1:
+        raise ValueError("Weeks must be a positive integer.")
+
+    if sales.shape[1] < weeks * 7:
+        raise ValueError("Not enough history for the requested weeks.")
+
+    if not isinstance(horizon, int) or horizon < 1:
+        raise ValueError("Horizon must be a positive integer.")
+
+    # Group recent history into weeks, with seven positions per week.
+    recent = sales[:, -weeks * 7:]
+    weekly_blocks = recent.reshape(sales.shape[0], weeks, 7)
+
+    # Average matching weekdays across the historical weeks.
+    weekday_averages = weekly_blocks.mean(axis=1)
+
+    # After complete weeks, the next day matches position zero.
+    positions = np.arange(horizon) % 7
+
+    return weekday_averages[:, positions]
